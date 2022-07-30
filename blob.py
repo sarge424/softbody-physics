@@ -1,11 +1,10 @@
 import math
-from xml.etree.ElementTree import PI
 from vector import Vector
 
 import pygame
 pygame.init()
 
-class Body():
+class Blob():
 	def __init__(self, n=4, e=6, verts=False, fill=False, forces=False):
 		self.n = n
 		self.e = 6
@@ -28,7 +27,7 @@ class Body():
 	def move(self, bounds):
 		for i in range(self.n):
 			#print('move>> ', i, self.acc[i])
-			self.collide(bounds)
+			self.bound(bounds)
 			
 			self.vel[i] += self.acc[i] + self.acc_int[i]
 			self.vel[i] *= 0.97 #air resistance
@@ -60,8 +59,8 @@ class Body():
 			norm = self.normals[i] * self.b / (self.n ** 0.5)
 			self.acc_int[i1] += norm
 			self.acc_int[i2] += norm
-			
-	def collide(self, bounds):
+	
+	def bound(self, bounds):
 		min_x, min_y, max_x, max_y = bounds
 		for i in range(self.n):
 			if self.pos[i].y >= max_y:
@@ -91,6 +90,7 @@ class Body():
 				#self.vel[i].y = -abs(self.vel[i].y) * 0.9 if abs(self.vel[i].y) > 1000 else 0
 				self.vel[i].x = max(self.vel[i].x, 0)
 				self.vel[i].y *= 0.9
+
 
 	def calc_normals(self):
 		self.normals = []
@@ -129,9 +129,7 @@ class Body():
 		for edge in self.edges:
 			p1, p2, dist = edge
 			color = (0,0,0)
-			pygame.draw.line(disp, color, self.pos[p1](), self.pos[p2](), 1)
-
-		pygame.draw.circle(disp, (0,255,0), Vector.average(self.pos)(), 2)
+			pygame.draw.line(disp, color, self.pos[p1](), self.pos[p2](), 2)
 		
 		if self.verts:
 			for pos in self.pos:
